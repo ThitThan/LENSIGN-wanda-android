@@ -9,6 +9,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import com.sleepysally.apps.mazikeen.signature.model.InkPoint
 import kotlin.math.abs
 
 
@@ -29,7 +30,10 @@ class InkView : View {
     private var bgColor = Color.WHITE
     private var strokeWidth: Int = 3
 
-    private val supportedInputTools = arrayListOf(MotionEvent.TOOL_TYPE_STYLUS)
+    private val supportedInputTools = arrayListOf(
+        MotionEvent.TOOL_TYPE_STYLUS,
+        MotionEvent.TOOL_TYPE_FINGER
+    )
 
 //    private var emboss: Boolean = false
 //    private var blur: Boolean = false
@@ -39,6 +43,14 @@ class InkView : View {
     private var mBitmap: Bitmap? = null
     private var mCanvas: Canvas? = null
     private var mBitmapPaint = Paint(Paint.DITHER_FLAG)
+
+    // DATA
+    private var inkPoints: ArrayList<InkPoint> = ArrayList()
+        get() = field
+        set(value) { field = value }
+
+    // EVENT LISTENERS
+    lateinit var onSigningFinished: (ArrayList<InkPoint>) -> Boolean
 
     constructor(context: Context) : this(context, null) {}
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
@@ -68,6 +80,7 @@ class InkView : View {
     fun clear() {
 //        this.bgColor = DEFAULT_BG_COLOR
         this.paths.clear()
+        this.inkPoints.clear()
         this.mCountDownTimer?.cancel()
 
         this.invalidate()
@@ -133,7 +146,11 @@ class InkView : View {
 
 
         if (this.supportedInputTools.contains(event.getToolType(0))) {
+            // Record Data
             Log.d("pen", "${x} ${y} ${event.pressure}")
+            this.inkPoints.add(InkPoint(x, y, event.pressure, System.currentTimeMillis()))
+
+            // Draw
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     touchStart(x, y)
@@ -161,16 +178,13 @@ class InkView : View {
             }
 
             override fun onFinish() {
-                var builder = AlertDialog.Builder(this@InkView.context)
-                builder.setTitle("Your Signature Data")
-                builder.setMessage("Here!!")
-                var dialog = builder.create()
-                dialog.show()
+                val shouldClearStrokes = onSigningFinished(inkPoints);
+                if (shouldClearStrokes) {
+                    clear()
+                }
             }
 
         }
 
     }
-
-
 }
