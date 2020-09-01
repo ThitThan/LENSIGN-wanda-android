@@ -14,7 +14,8 @@ import kotlin.math.abs
 
 
 /**
- *  Based on https://medium.com/@ssaurel/learn-to-create-a-paint-application-for-android-5b16968063f8
+ *  Based on
+ *  https://medium.com/@ssaurel/learn-to-create-a-paint-application-for-android-5b16968063f8
  */
 
 class InkView : View {
@@ -40,14 +41,12 @@ class InkView : View {
 //    private var mEmboss: MaskFilter? = null
     private var mBlur: MaskFilter? = null
 
-    private var mBitmap: Bitmap? = null
-    private var mCanvas: Canvas? = null
+    private lateinit var mBitmap: Bitmap
+    private lateinit var mCanvas: Canvas
     private var mBitmapPaint = Paint(Paint.DITHER_FLAG)
 
     // DATA
     private var inkPoints: ArrayList<InkPoint> = ArrayList()
-        get() = field
-        set(value) { field = value }
 
     // EVENT LISTENERS
     lateinit var onSigningFinished: (ArrayList<InkPoint>) -> Boolean
@@ -67,12 +66,14 @@ class InkView : View {
         mBlur = BlurMaskFilter(5f, BlurMaskFilter.Blur.NORMAL)
     }
 
-    fun init(metrics: DisplayMetrics) {
-        var height = metrics.heightPixels
-        var width= metrics.widthPixels
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
 
-        this.mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        this.mCanvas = Canvas(mBitmap)
+        // init bitmap
+        var dm = DisplayMetrics()
+        display.getMetrics(dm)
+        mBitmap = Bitmap.createBitmap(dm.widthPixels, dm.heightPixels, Bitmap.Config.ARGB_8888)
+        mCanvas = Canvas(mBitmap)
 
         this.setupCountDown()
     }
@@ -92,7 +93,7 @@ class InkView : View {
 
         for (fp in paths) {
             mPaint.color = fp.color
-            mPaint.setStrokeWidth(fp.strokeWidth.toFloat())
+            mPaint.strokeWidth = fp.strokeWidth.toFloat()
             mPaint.maskFilter = null
 
 //            if (fp.emboss)
@@ -100,7 +101,7 @@ class InkView : View {
             if (fp.blur)
                 mPaint.maskFilter = mBlur
 
-            mCanvas?.drawPath(fp.path, mPaint)
+            mCanvas?.drawPath(fp.path!!, mPaint)
 
         }
 

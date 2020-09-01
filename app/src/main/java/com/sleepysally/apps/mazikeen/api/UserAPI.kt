@@ -13,7 +13,7 @@ import com.sleepysally.apps.mazikeen.signature.model.InkPoint
 import org.json.JSONArray
 import org.json.JSONObject
 
-class UserController {
+class UserAPI {
 
     private val gson : Gson = Gson()
     private var queue : RequestQueue? = null
@@ -22,11 +22,11 @@ class UserController {
     private val BASE_URL = "https://aodaompig.xyz/wanda/api"
 
     companion object {
-        private var singleton: UserController? = null;
+        private var singleton: UserAPI? = null;
 
-        fun getCurrent(context: Context): UserController {
+        fun getCurrent(context: Context): UserAPI {
             if (singleton == null) {
-                singleton = UserController(context)
+                singleton = UserAPI(context)
             }
             return singleton!!
         }
@@ -37,10 +37,10 @@ class UserController {
         queue = Volley.newRequestQueue(this.context)
     }
 
-    fun postSignature(points: ArrayList<InkPoint>) {
-        // post to the default user (John Smith)
-        postSignature("0", points)
-    }
+//    fun postSignature(points: ArrayList<InkPoint>) {
+//        // post to the default user (John Smith)
+//        postSignature("0", points)
+//    }
     fun postSignature(userId: String, points: ArrayList<InkPoint>) {
         // SHOW STATUS = SUBMITTING
         val toast = Toast.makeText(this.context, "Submitting..", Toast.LENGTH_LONG);
