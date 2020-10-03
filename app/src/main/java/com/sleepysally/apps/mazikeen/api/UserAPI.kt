@@ -36,47 +36,4 @@ class UserAPI {
         this.context = context
         queue = Volley.newRequestQueue(this.context)
     }
-
-//    fun postSignature(points: ArrayList<InkPoint>) {
-//        // post to the default user (John Smith)
-//        postSignature("0", points)
-//    }
-    fun postSignature(userId: String, points: ArrayList<InkPoint>) {
-        // SHOW STATUS = SUBMITTING
-        val toast = Toast.makeText(this.context, "Submitting..", Toast.LENGTH_LONG);
-        toast.show()
-
-        val url = "${BASE_URL}/users/${userId}/signature"
-        val signature = JSONArray(gson.toJson(points))
-
-        val body = JSONObject()
-        body.put("signature", signature)
-
-        // Request a string response from the provided URL.
-        val stringRequest = JsonObjectRequest(
-            Request.Method.POST,
-            url,
-            body,
-            Response.Listener<JSONObject> { response ->
-                toast.cancel()
-
-                Toast.makeText(context, "Signature data submitted", Toast.LENGTH_SHORT).show()
-//                var builder = AlertDialog.Builder(this.context)
-//                builder.setTitle("Response")
-//                builder.setMessage(response.toString())
-//                builder.create().show()
-//                "Response is: ${response.toString()}";
-            },
-            Response.ErrorListener { error ->
-                toast.cancel()
-
-                var builder = AlertDialog.Builder(this.context)
-                builder.setTitle("Error")
-                builder.setMessage(error.message)
-                builder.create().show()
-            }
-        )
-        // Add the request to the RequestQueue.
-        queue!!.add(stringRequest)
-    }
 }

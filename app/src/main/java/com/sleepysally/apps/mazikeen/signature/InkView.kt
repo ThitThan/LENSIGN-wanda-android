@@ -71,7 +71,7 @@ class InkView : View {
 
         // init bitmap
         var dm = DisplayMetrics()
-        display.getMetrics(dm)
+        display.getRealMetrics(dm)
         mBitmap = Bitmap.createBitmap(dm.widthPixels, dm.heightPixels, Bitmap.Config.ARGB_8888)
         mCanvas = Canvas(mBitmap)
 

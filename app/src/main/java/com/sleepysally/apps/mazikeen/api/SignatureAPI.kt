@@ -38,7 +38,7 @@ class SignatureAPI {
         queue = Volley.newRequestQueue(this.context)
     }
 
-    fun classifySignature(userId: String, rawPoints: ArrayList<InkPoint>) {
+    fun classify(userId: String, rawPoints: ArrayList<InkPoint>) {
         val url = "${BASE_URL}/model/classify"
 //        val url = "${BASE_URL}/test-params"
 
@@ -63,28 +63,23 @@ class SignatureAPI {
             url,
             body,
             Response.Listener<JSONObject> { response ->
-                var builder = AlertDialog.Builder(this.context)
-                builder.setTitle("Response")
-                builder.setMessage(response.toString(4))
-                builder.create().show()
+                AlertDialog.Builder(this.context).apply {
+                    setTitle("Response")
+                    setMessage(response.toString(4))
+                }.create().show()
             },
             Response.ErrorListener { error ->
-                var builder = AlertDialog.Builder(this.context)
-                builder.setTitle("Error")
-                builder.setMessage(error.localizedMessage)
-                builder.create().show()
+                AlertDialog.Builder(this.context).apply {
+                    setTitle("Error")
+                    setMessage(error.localizedMessage)
+                }.create().show()
             }
         )
-        AlertDialog.Builder(this.context).apply {
-            setTitle("JSON")
-            setMessage(Arrays.toString(stringRequest.body))
-            setPositiveButton("SUBMIT") { _: DialogInterface, _: Int ->
-                // SHOW STATUS = SUBMITTING
-                toast.show()
 
-                // Add the request to the RequestQueue.
-                queue.add(stringRequest)
-            }
-        }.create().show()
+        // SHOW STATUS = SUBMITTING
+        toast.show()
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
     }
 }
